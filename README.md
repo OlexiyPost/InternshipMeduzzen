@@ -11,6 +11,6 @@ I have done some research into given [datasets](https://drive.google.com/drive/u
   This library might be useful, as it is more flexible than spaCy and gives more control of NLP pipeline.
 - **Pandas**<br/>
   This library is useful for data structurization. For instance, I could structurize emails by *Rolle* mentioned in *ROLLEN_VORGANG* spreadsheet from Email Classification dataset.
-- **TensorFlow Keras**
+- **TensorFlow Keras**<br/>
   TensorFlow offers a rich selection of pre-trained models for NLP, such as BERT, GPT or Word2Vec, which might be useful.
    
