@@ -2,7 +2,7 @@
 I have done some research into given [datasets](https://drive.google.com/drive/u/1/folders/16LkwOXX8XxDV45VgXaDXAQNJASUF71bS) and here is my opinion on an Email Classification dataset.
 ## Libraries I am going to use ##
 - **spaCy**<br/>
-  Modern NLP library, which supports around 70 languages and has pipelines for 25+ languages. As for now, I think I will use spaCy as a main NLP library in the project because it has built-in lemmatization and is more convenient for   
+  Modern NLP library, which supports around 70 languages and has pipelines for 25+ languages. This library might be useful, as it has built-in lemmatization and is more convenient for   
   smaller projects.
 - **scikit-learn**<br/>
   It contains plenty of metrics and models, which might be used in the project (*TfIdfClassifier, confusion_matrix, classification_report*).
