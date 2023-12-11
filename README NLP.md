@@ -18,5 +18,5 @@ Here is my opinion on Natural Language Processing challenge.
 As for now, I think there will be following steps:
 1. **Reading and saving the text**: Given the features of Gradio, it means "reading user input and giving it to the function".
 2. **Tokenization & lemmatization of the text**: These processes are needed for further lemma analysis. As I see it, 
-3. **Demonstration of the text analysis**: Showing dependencies, parts of speech, named entities. As for now, I believe that *displacy* from spaCy will be enough for that.
+3. **Demonstration of the text analysis**: Showing dependencies, parts of speech, named entities. As for now, I believe that *displacy* from spaCy will be enough for that.<br/>
 There also can be some other steps, such as user input validation, some NLG (maybe, response generation). I will elaborate on that as soon as I get more requirements for the project.
