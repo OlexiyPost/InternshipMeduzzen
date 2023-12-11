@@ -1,4 +1,4 @@
-![image](https://github.com/OlexiyPost/InternshipMeduzzen/assets/110473438/2d54247e-3766-40fc-bb0d-47fa74443a27)# InternshipMeduzzen
+# InternshipMeduzzen
 Here is my opinion on Natural Language Processing challenge.
 ## Libraries I am going to use ##
 - **Gradio**<br/>
