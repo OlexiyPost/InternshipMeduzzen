@@ -1,14 +1,12 @@
 import os
 import re
 
-def get_all_text_files(path, extension='.txt'):
+def get_all_text_files(path: str, extension='.txt') -> list[str]:
     """
     Extracts all paths to files in the directory.\n
     Parameters:\n
-    - path: str;
-        Path to the local directory with emails.
-    - extension: str;
-        File extension of saved emails.\n
+    - path: Path to the local directory with emails.
+    - extension: File extension of saved emails.\n
     Returns the list of paths to the file.
     """
     files_dirs = []
@@ -23,34 +21,31 @@ def get_all_text_files(path, extension='.txt'):
 
     return files_dirs
 
-def get_class_from_path(path):
+def get_class_from_path(path: str) -> str:
     """
     Extracts email class from filepath.\n
     Parameters:\n
-    - path: str;
-        Path to the email file.
+    - path: Path to the email file.
     Returns the email class.
     """
     pattern = re.compile(r'(\d{4}_\w+)')
     match = re.search(pattern, path)
     return match.group(1)
 
-def extract_email_text(path):
+def extract_email_text(path: str) -> str:
     """
     Extracts text between dashes from email.\n
     Parameters:\n
-    - path: str;
-        Path to the email file.
+    - path: Path to the email file.
     Returns the email text as a file.
     """
     with open(path, 'r') as f:
         text = f.read()
     pattern = re.compile(r'-{2,}\n(.*?)\n-{2,}', re.DOTALL)
     match = re.search(pattern, text)
-    if match is not None:
+    email_text = ""
+    if match:
         email_text = re.sub(r'[\d\n]', ' ', match.group(1))
         email_text = re.sub(r'\d+', '', email_text)
-        return email_text
-    else:
-        return None
+    return email_text
 
