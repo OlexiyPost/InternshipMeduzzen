@@ -13,8 +13,7 @@ def model_topics(text_column_name: str, n_topics: int, file_obj: gr.File) -> pd.
     Returns the updated dataframe for output.
     """
     df = pd.read_csv(file_obj)
-    topics_number = int(n_topics)
-    tr, tw = analyze_topics(df, text_column_name, topics_number)
+    tr, tw = analyze_topics(df, text_column_name, int(n_topics))
     topics = [get_topic(topic_bag_of_words) for topic_bag_of_words in tw]
     individual_topics = [topics[index] for index in tr.argmax(axis=1)]
     df['Topic'] = individual_topics
@@ -24,19 +23,17 @@ def extract_dataframe(file_obj: gr.File) -> pd.DataFrame:
     """
     Reads dataframe to predefined variable.\n
     Parameters:\n
-    - file_obj: file object;
-        Opened file object.\n
+    - file_obj: file object.\n
     Returns the read dataframe.
     """
     data = pd.read_csv(file_obj)
     return data
 
-def pos_ner_analysis(text):
+def pos_ner_analysis(text: str) -> list[tuple]:
     """
     Renders POS, dependencies and NER for given text.\n
     Parameters:\n
-    - text: str;
-        Source text to analyze.\n
+    - text: Source text to analyze.\n
     Returns a list of tokens, html render with NER and html render with dependencies.
     """
     doc = nlp(text)
@@ -57,32 +54,26 @@ def pos_ner_analysis(text):
         pos_tokens.extend([(token.text, token.pos_), (" ", None)])
     return pos_tokens, ent_html, dep_html
 
-def vader_analysis(text):
+def vader_analysis(text: str, mode: str) -> pd.DataFrame:
     """
     Estimates sentiment of the text via VADER.\n
     Parameters:\n
-    - text: str;
-        Source text to analyze.\n
-    Returns a string of overall sentiment estimate based on compound score.
+    - text: Source text to analyze;
+    - mode: Mode of analysis (whole text, paragraphs, sentences, sentences (with comma separation)).\n
+    Returns a dataframe of sentiment estimate based on compound score.
     """
-    scores = sid.polarity_scores(text)
-    overall_score = "Neutral"
-    if scores['compound'] < -0.25:
-        overall_score = "Negative"
-    elif scores['compound'] > 0.25:
-        overall_score = "Positive"
-    return overall_score
+    vd = vader_processing(text, mode)
+    return pd.DataFrame.from_dict({'Text': list(vd.keys()), 'Sentiment': list(vd.values())})
 
 def vader_dataframe_analysis(text_column_name: str, file_obj: gr.File) -> pd.DataFrame:
     """
     Assigns a sentiment estimate to each record in dataframe data.\n
     Parameters:\n
-    - text_column_name: str;
-        Name of Dataframe column, which contains the corpus.\n
+    - text_column_name: Name of Dataframe column, which contains the corpus.\n
     Returns the updated dataframe for output.
     """
     df = pd.read_csv(file_obj)
-    df['Sentiment'] = df[text_column_name].apply(lambda text: vader_analysis(text))
+    df['Sentiment'] = df[text_column_name].apply(lambda text: vader_analysis(text, mode='whole text'))
     return df
 
 def launch_gui():
@@ -100,8 +91,13 @@ def launch_gui():
                                    ["It was the best of times, it was the worst of times."]])
         with gr.Tab("VADER analysis"):
             gr.Interface(fn=vader_analysis, 
-                         inputs=gr.Textbox(label='Enter your text'), 
-                         outputs=gr.Textbox(label='Sentiment estimate'),
+                         inputs=[gr.Textbox(label='Enter your text'),
+                                 gr.Dropdown(label='Analysis mode',
+                                             choices=['Whole Text', 
+                                                      'Paragraphs', 
+                                                      'Sentences', 
+                                                      'Sentences (with comma separation)'])],
+                         outputs=gr.DataFrame(label='Sentiment estimate'),
                          examples=[["What a beautiful morning for a walk!"],
                                    ["It was the best of times, it was the worst of times."]])
         with gr.Tab("Topic Modeling"):
