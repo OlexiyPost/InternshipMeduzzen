@@ -2,6 +2,7 @@ import gradio as gr
 import pandas as pd
 
 from processing_methods import *
+from html_converters import vader_to_html, ent_dep_to_html
 
 def model_topics(text_column_name: str, n_topics: int, file_obj: gr.File) -> pd.DataFrame:
     """
@@ -14,8 +15,7 @@ def model_topics(text_column_name: str, n_topics: int, file_obj: gr.File) -> pd.
     """
     df = pd.read_csv(file_obj)
     tr, tw = analyze_topics(df, text_column_name, int(n_topics))
-    topics = [get_topic(topic_bag_of_words) for topic_bag_of_words in tw]
-    individual_topics = [topics[index] for index in tr.argmax(axis=1)]
+    individual_topics = [tw[index] for index in tr.argmax(axis=1)]
     df['Topic'] = individual_topics
     return df
 
@@ -36,25 +36,13 @@ def pos_ner_analysis(text: str) -> list[tuple]:
     - text: Source text to analyze.\n
     Returns a list of tokens, html render with NER and html render with dependencies.
     """
-    doc = nlp(text)
-    dep_html = displacy.render(doc, style="dep", page=True)
-    dep_html = (
-        "<div style='max-width:100%; max-height:360px; overflow:auto'>"
-        + dep_html
-        + "</div>"
-    )
-    ent_html = displacy.render(doc, style="ent", page=True)
-    ent_html = (
-        "<div style='max-width:100%; max-height:360px; overflow:auto'>"
-        + ent_html
-        + "</div>"
-    )
+    doc, ent_html, dep_html = ent_dep_to_html(text)
     pos_tokens = []
     for token in doc:
         pos_tokens.extend([(token.text, token.pos_), (" ", None)])
     return pos_tokens, ent_html, dep_html
 
-def vader_analysis(text: str, mode: str) -> pd.DataFrame:
+def vader_analysis(text: str, mode: str) -> gr.HTML:
     """
     Estimates sentiment of the text via VADER.\n
     Parameters:\n
@@ -63,7 +51,7 @@ def vader_analysis(text: str, mode: str) -> pd.DataFrame:
     Returns a dataframe of sentiment estimate based on compound score.
     """
     vd = vader_processing(text, mode)
-    return pd.DataFrame.from_dict({'Text': list(vd.keys()), 'Sentiment': list(vd.values())})
+    return vader_to_html(vd)
 
 def vader_dataframe_analysis(text_column_name: str, file_obj: gr.File) -> pd.DataFrame:
     """
@@ -96,8 +84,9 @@ def launch_gui():
                                              choices=['Whole Text', 
                                                       'Paragraphs', 
                                                       'Sentences', 
-                                                      'Sentences (with comma separation)'])],
-                         outputs=gr.DataFrame(label='Sentiment estimate'),
+                                                      'Sentences (with comma separation)',
+                                                      'Clusters'])],
+                         outputs=gr.HTML(label='Sentiment estimate'),
                          examples=[["What a beautiful morning for a walk!"],
                                    ["It was the best of times, it was the worst of times."]])
         with gr.Tab("Topic Modeling"):
