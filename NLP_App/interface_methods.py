@@ -15,7 +15,8 @@ def model_topics(text_column_name: str, n_topics: int, file_obj: gr.File) -> pd.
     """
     df = pd.read_csv(file_obj)
     tr, tw = analyze_topics(df, text_column_name, int(n_topics))
-    individual_topics = [tw[index] for index in tr.argmax(axis=1)]
+    topics = [get_topic(topic_bag_of_words) for topic_bag_of_words in tw]
+    individual_topics = [topics[index] for index in tr.argmax(axis=1)]
     df['Topic'] = individual_topics
     return df
 
@@ -61,7 +62,7 @@ def vader_dataframe_analysis(text_column_name: str, file_obj: gr.File) -> pd.Dat
     Returns the updated dataframe for output.
     """
     df = pd.read_csv(file_obj)
-    df['Sentiment'] = df[text_column_name].apply(lambda text: vader_analysis(text, mode='whole text'))
+    df['Sentiment'] = df[text_column_name].apply(lambda text: list(vader_processing(text, mode='whole text').values()))
     return df
 
 def launch_gui():

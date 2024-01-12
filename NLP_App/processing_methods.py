@@ -50,7 +50,6 @@ def analyze_topics(dataframe: pd.DataFrame, text_column_name: str, n_topics: int
     for topic in lda.components_:
         topic_top_words = [cv.get_feature_names_out()[i] for i in topic.argsort()[-15:]]
         topics_words.append(topic_top_words)
-    topics_words = [get_topic(topic_bag_of_words) for topic_bag_of_words in topic_top_words]
     topic_results = lda.transform(dtm)
     return (topic_results, topics_words)
 
@@ -64,6 +63,7 @@ def get_comma_separated_sentences(text: str) -> list[str]:
     pattern = re.compile(r'(?<=[,;.?!:])\s*')
     matches = pattern.split(text)
     texts = [match for match in matches]
+    texts = texts[:-1]
     return texts
 
 def vader_processing(text: str, mode: str) -> dict:
