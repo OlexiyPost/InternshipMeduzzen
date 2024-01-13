@@ -73,7 +73,7 @@ def get_comma_separated_sentences(text: str) -> list[str]:
     pattern = re.compile(r'(?<=[,;.?!:])\s*')
     matches = pattern.split(text)
     texts = [match for match in matches]
-    texts = texts[:-1]
+    texts = texts[:-1] 
     return texts
 
 def vader_processing(text: str, mode: str) -> dict:
@@ -113,10 +113,10 @@ def vader_processing(text: str, mode: str) -> dict:
             while i < len(sentiments):
                 text_cluster = ""
                 j = i
-                while j < len(sentiments) and sentiments[j] == sentiments[i]:  # while the topic in order is the same
+                while j < len(sentiments) and sentiments[j] == sentiments[i]:  # while the sentiment in order is the same
                     text_cluster += " " + texts[j]  # merge text
                     j += 1
-                vader_dict[text_cluster] = sentiments[i]  # give the merged text the same topic
+                vader_dict[text_cluster] = sentiments[i]  # give the merged text the same sentiment
                 i = j
     return vader_dict
 
@@ -135,7 +135,6 @@ def multilang_processing(text: str) -> dict:
         span = (span_start, span_end)
         language = d[2].capitalize()
         lang_dict[span] = language
-    print(lang_dict)
     return lang_dict
 
 def pos_ner_multilang(text: str) -> list:
@@ -145,15 +144,11 @@ def pos_ner_multilang(text: str) -> list:
     - text: Source text to process.\n
     Return a list of spaCy docs.
     """
-    print(len(text))
     ld = multilang_processing(text)
     docs = []
     for span, lang in ld.items():
         if lang in list(supported_languages_models.keys()):
             model = supported_languages_models[lang]
             doc = model(text[span[0]:span[1]])
-            print(text[span[0]:span[1]])
-            print(doc.text)
             docs.append(doc)
     return docs
-    
